@@ -29,6 +29,10 @@
 #include "SampleApp/ConsolePrinter.h"
 #include "Settings/SettingStringConversion.h"
 
+extern "C" {
+#include <wiringPi.h>
+}
+
 /// String to identify log entries originating from this file.
 static const std::string TAG("UIManager");
 
@@ -375,7 +379,11 @@ UIManager::UIManager(std::shared_ptr<avsCommon::sdkInterfaces::LocaleAssetsManag
         m_authCheckCounter{0},
         m_connectionStatus{avsCommon::sdkInterfaces::ConnectionStatusObserverInterface::Status::DISCONNECTED},
         m_localeAssetsManager{localeAssetsManager} {
+		wiringPiSetup();
+		pinMode(4, OUTPUT);
+		
 }
+
 
 static const std::string COMMS_MESSAGE =
     "+----------------------------------------------------------------------------+\n"
@@ -680,6 +688,15 @@ void UIManager::onSettingNotification(
     m_executor.submit([msg]() { ConsolePrinter::prettyPrint(msg); });
 }
 
+
+extern "C" {
+void switchVideo(bool state) {
+   ConsolePrinter::prettyPrint("# SWitching video "+state);
+   digitalWrite(4,state?1:0);
+}
+
+}
+
 void UIManager::printState() {
     if (m_connectionStatus == avsCommon::sdkInterfaces::ConnectionStatusObserverInterface::Status::DISCONNECTED) {
         ConsolePrinter::prettyPrint("Client not connected!");
@@ -688,9 +705,11 @@ void UIManager::printState() {
     } else if (m_connectionStatus == avsCommon::sdkInterfaces::ConnectionStatusObserverInterface::Status::CONNECTED) {
         switch (m_dialogState) {
             case DialogUXState::IDLE:
+		switchVideo(0);
                 ConsolePrinter::prettyPrint("Alexa is currently idle!");
                 return;
             case DialogUXState::LISTENING:
+		switchVideo(1);
                 ConsolePrinter::prettyPrint("Listening...");
                 return;
             case DialogUXState::EXPECTING:
