@@ -29,9 +29,12 @@
 #include "SampleApp/ConsolePrinter.h"
 #include "Settings/SettingStringConversion.h"
 
+#ifdef __arm__
 extern "C" {
 #include <wiringPi.h>
 }
+#endif
+
 
 /// String to identify log entries originating from this file.
 static const std::string TAG("UIManager");
@@ -379,9 +382,11 @@ UIManager::UIManager(std::shared_ptr<avsCommon::sdkInterfaces::LocaleAssetsManag
         m_authCheckCounter{0},
         m_connectionStatus{avsCommon::sdkInterfaces::ConnectionStatusObserverInterface::Status::DISCONNECTED},
         m_localeAssetsManager{localeAssetsManager} {
+#ifdef __arm__
 		wiringPiSetup();
 		pinMode(4, OUTPUT);
 		
+#endif
 }
 
 
@@ -692,7 +697,9 @@ void UIManager::onSettingNotification(
 extern "C" {
 void switchVideo(bool state) {
    ConsolePrinter::prettyPrint("# SWitching video "+state);
+#ifdef __arm__
    digitalWrite(4,state?1:0);
+#endif
 }
 
 }
