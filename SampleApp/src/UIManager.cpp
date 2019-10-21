@@ -374,6 +374,11 @@ static const std::string DO_NOT_DISTURB_NAME = "DoNotDisturb";
 /// The index of the first option in displaying a list of options.
 static const unsigned int OPTION_ENUM_START = 1;
 
+
+extern "C" {
+int main_old(int argc, const char **argv);
+}
+
 UIManager::UIManager(std::shared_ptr<avsCommon::sdkInterfaces::LocaleAssetsManagerInterface> localeAssetsManager) :
         m_dialogState{DialogUXState::IDLE},
         m_capabilitiesState{CapabilitiesObserverInterface::State::UNINITIALIZED},
@@ -385,8 +390,9 @@ UIManager::UIManager(std::shared_ptr<avsCommon::sdkInterfaces::LocaleAssetsManag
 #ifdef __arm__
 		wiringPiSetup();
 		pinMode(4, OUTPUT);
-		
 #endif
+        const char *dummy[] = {"dummy"};
+        main_old(1,dummy);
 }
 
 

@@ -11,7 +11,8 @@ list(APPEND SampleApp_SOURCES
     UserInputManager.cpp
     SampleApplication.cpp
     SampleEqualizerModeController.cpp
-    main.cpp)
+    main.cpp
+    websocket.c)
 
 if (PORTAUDIO)
     list(APPEND SampleApp_SOURCES PortAudioMicrophoneWrapper.cpp)
@@ -39,12 +40,18 @@ ENDIF()
 
 add_executable(SampleApp ${SampleApp_SOURCES})
 
+
 target_include_directories(SampleApp PUBLIC 
     "${SampleApp_SOURCE_DIR}/include"
     "${AudioResources_SOURCE_DIR}/include"
     "${RegistrationManager_SOURCE_DIR}/include"
     "${ESP_SOURCE_DIR}/include"
-    "${PORTAUDIO_INCLUDE_DIR}")
+    "${PORTAUDIO_INCLUDE_DIR}"
+    "/home/casten/git/libwebsockets/include"
+    "/home/casten/git/libwebsockets/include/libwebsockets"
+    )
+
+#find_library(websockets_lib websockets)
 
 target_link_libraries(SampleApp
     DefaultClient
@@ -52,7 +59,10 @@ target_link_libraries(SampleApp
     CBLAuthDelegate
     SQLiteStorage
     EqualizerImplementations
-    "${PORTAUDIO_LIB_PATH}")
+    "${PORTAUDIO_LIB_PATH}"
+#    ${websockets_lib}
+    "/home/casten/git/libwebsockets/build/lib/libwebsockets.so"
+    )
 
 if (PCC)
     target_link_libraries(SampleApp AVSCommon)
